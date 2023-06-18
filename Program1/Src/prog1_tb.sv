@@ -9,10 +9,10 @@
 //    
 module prog1_tb();
 
-bit   clk    ,                   // clock source -- drives DUT input of same name
-	  req  ;	                 // req -- start program -- drives DUT input
+bit   clk,                   // clock source -- drives DUT input of same name
+	    req;	                 // req -- start program -- drives DUT input
 wire  done;		    	         // ack -- from DUT -- done w/ program
-bit Init;
+bit   Init;
 
 // program 1-specific variables
 bit  [11:1] d1_in[15];           // original messages
@@ -24,25 +24,18 @@ bit  [15:0] score1, case1;
 // change "top_level" if you called your device something different
 // explicitly list ports if your names differ from test bench's
 // if you used any parameters, override them here
-TopLevel DUT(.clk(clk), .init(init), .reset(req), .done(done));            // replace "proc" with the name of your top level module
+TopLevel DUT(.clk(clk), .Init(Init), .reset(req), .done(done));            // replace "proc" with the name of your top level module
 
-parameter SIMULATION = 1;
 
 initial begin
-//	localparam SYNTHESIS = 0;
-//		generate
-			if(SIMULATION) begin
-//				'ifdef SIMULATION
 				for(int i=0;i<15;i++)	begin
 					d1_in[i] = $random >> 4;        // create 15 messages	   '1    '0
 					// copy 15 original messages into first 30 bytes of memory 
 					// rename "dm1" and/or "core" if you used different names for these
-					DUT.dm1.core[2*i+1]  = {5'b0,d1_in[i][11:9]};
-					DUT.dm1.core[2*i]    =       d1_in[i][ 8:1];
+					DUT.data_mem.Core[2*i+1]  = {5'b0,d1_in[i][11:9]};
+					DUT.data_mem.Core[2*i]    =       d1_in[i][ 8:1];
 				end
-//				'endif
-			end
-//		endgenerate
+        
   #10ns req   = 1'b1;          // pulse request to DUT
   #10ns req   = 1'b0;
   wait(done);                   // wait for ack from DUT
@@ -57,9 +50,9 @@ initial begin
     p0 = ^d1_in[i]^p8^p4^p2^p1;  // overall parity (16th bit)
 // assemble output (data with parity embedded)
     $displayb ({d1_in[i][11:5],p8,d1_in[i][4:2],p4,d1_in[i][1],p2,p1,p0});
-    $writeb  (DUT.dm1.core[31+2*i]);
-    $displayb(DUT.dm1.core[30+2*i]);
-    if({DUT.dm1.core[31+2*i],DUT.dm1.core[30+2*i]} == {d1_in[i][11:5],p8,d1_in[i][4:2],p4,d1_in[i][1],p2,p1,p0}) begin
+    $writeb  (DUT.data_mem.Core[31+2*i]);
+    $displayb(DUT.data_mem.Core[30+2*i]);
+    if({DUT.data_mem.Core[31+2*i],DUT.data_mem.Core[30+2*i]} == {d1_in[i][11:5],p8,d1_in[i][4:2],p4,d1_in[i][1],p2,p1,p0}) begin
       $display(" we have a match!");
       score1++;
     end

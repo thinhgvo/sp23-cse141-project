@@ -6,16 +6,16 @@
     Instruction Memory component
 */
 
-module instr_ROM # (parameter D = 11, C = 10) (
+module instr_ROM # (parameter D = 8, C = 9) (
     input        [D-1:0] InstAddress, // The machine code that will be read and translate into the instructions for the processor
     output logic [C-1:0] InstOutput  // The instructions that the processor can understand
 );
 
-    logic        [C-1:0] core[2**D];
+    logic        [C-1:0] Core[2**D];
     initial begin
-        $readmemb("D:\CSE 141L\Program1\mach_code.txt",core);
+        $readmemb("mach_code.txt",Core);
     end
 
-    always_comb InstOutput = core[InstAddress];
+    always_comb InstOutput = Core[InstAddress];
     
 endmodule

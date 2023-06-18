@@ -15,8 +15,8 @@ module ALU #(parameter W=8) (
 	input [2:0]	  IOperand,
 	input 		  OpType,
     output logic [W-1:0] Output,
-    output logic Zero,
-    output wire  Equal
+    output logic  Zero,
+    output wire   Equal
     );
 
     assign Equal = (ReadA == ReadB) ? 1 : 0;
@@ -28,7 +28,6 @@ module ALU #(parameter W=8) (
                 OR   : Output = ReadA | ReadB;
                 ADD  : Output = ReadA + ReadB;
                 NOT  : Output = ~ReadA;
-                // NOT  : Output = ReadA + 1;
                 SUB  : Output = ReadA - ReadB;
                 STR  : Output = ReadA;
 				LOAD : Output = ReadA;

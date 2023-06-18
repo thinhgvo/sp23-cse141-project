@@ -10,8 +10,8 @@ module BLUT (
   input logic reset,
   input logic [4:0] index,
   input logic [9:0] target_address,
-  input logic write_enable,
-  output logic [9:0] branch_target
+  input logic WriteEn,
+  output logic[9:0] branch_target
 );
 
   logic [9:0] blut [31:0];
@@ -22,7 +22,7 @@ module BLUT (
     if (reset) begin
       branch_target_reg <= 10'b0;
     end else begin
-      if (write_enable) begin
+      if (WriteEn) begin
         blut[index] <= target_address;
       end else begin
         branch_target_reg <= blut[index];

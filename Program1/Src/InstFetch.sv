@@ -7,12 +7,12 @@
 */
 
 module IF(
-    input Branch,
-    input [8:0] Target,
-    input Init,
-    input Halt,
-    input clk,
-    output logic [8:0] PC
+    input        [7:0] Target,
+    input              Branch,
+                       Init,
+                       Halt,
+                       clk,
+    output logic [7:0] PC
     );
 
     always @(posedge clk)

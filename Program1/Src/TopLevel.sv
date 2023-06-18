@@ -5,51 +5,74 @@
     Note: This code is based on the source code provided by professor Eldon.
     Top Level
 */
-module TopLevel #(parameter W=8, byte_count=2**W, D = 3) (
+module TopLevel #(parameter W=8, byte_count=2**W, D = 4) (
     input         clk,
                   reset,
                   Init,     // "start" testbench to sends inputs
     output logic  done      // "finish" output back to the testbench
     );
-    logic[W:0] Target;
-	 logic		Halt;
-	 logic		Branch;
-    wire [W:0] PC;
+
+    logic [W-1:0]  InstAddress;
+    logic [W:0]    InstOutput;
+
+    instr_ROM instr_ROM(.*);
+
+    logic[W-1:0] Target;
+	logic		 Halt;
+	logic		 Branch;
+    wire [W-1:0] PC;
 
     IF IF(.*);
 
-    logic RegWrite;
-    logic [D-1:0] SrcA;
-    logic [D-1:0] SrcB;
-    logic [D-1:0] writeReg;
-    logic [W-1:0] writeValue;
-    logic [W-1:0] ReadA;
-    logic [W-1:0] ReadB;
+    logic RegWrite, ALU_Src, LUT_Src;
+    logic [D-1:0] raddr;
+    logic [W-1:0] ReadA, ReadB, IsnsOperand, writeValue;
 
-    reg_f #(W,D) reg_f(.*);
+    reg_f reg_f(.*);
 	 
-	 logic [4:0]  Operand;
-	 logic [1:0]  ALU_Src;
-	 logic		  Mem_to_Reg;
-	 logic		  Mem_Write;
+	logic Mem_to_Reg, Mem_Write;
 	 
-	 Control control(.*);
+	Control control(
+        .Insn(InstOutput),
+        .ALU_Src(ALU_Src),
+        .RegWrite(RegWrite),
+        .Mem_to_Reg(Mem_to_Reg),
+        .Mem_Write(Mem_Write),
+        .LUT_Src(LUT_Src),
+        .Branch(Branch),
+        .Halt(Halt)
+    );
+	
+	logic [D:0]   Immediate;
+    logic [W-1:0] Output;
+	logic Zero;
+    wire  Equal;
 	 
-	 logic [W-1:0] Immediate, Output;
-	 logic Zero, Equal;
+	ALU alu(
+        .ReadA(ReadA),
+        .ReadB(ReadB),
+        .Immediate(Immediate),
+        .ROperand(IsnsOperand[W-1:D]),
+        .IOperand(IsnsOperand[W-1:D+1]),
+        .OpType(InstOutput[8]),
+        .Output(Output),
+        .Zero(Zero),
+        .Equal(Equal)
+    );
 	 
-	 ALU #(W) alu(.*);
-	 
-	 logic WriteEn;
+	logic WriteEn;
 
-    logic [$clog2(byte_count)-1:0] raddr, waddr;
+    logic [$clog2(byte_count)-1:0] waddr;
 
-    logic [W-1:0] DataIn,
-                  DataAddress;
+    logic [W-1:0] DataIn, DataAddress, ALUResult;
     wire  [W-1:0] DataOut;
 
-    DataMem #(W,byte_count) DataMem(.*);
+    DataMem data_mem(.*);
 
+    logic [D:0] index;
+    logic [9:0] target_address, branch_target;
+
+    BLUT blut(.*);
 
     logic [ 6:0] count;
     logic [ 8:0] p;                              // parity bits
@@ -67,7 +90,7 @@ module TopLevel #(parameter W=8, byte_count=2**W, D = 3) (
             count <= 0;
             temp1 <= 0;
             temp2 <= 0;
-        end else begin
+        end else if(!done) begin
             count                     <= count + 1;
             if(temp1_enh) temp1[15:8] <= DataOut;
             if(temp1_enl) temp1[ 7:0] <= DataOut;

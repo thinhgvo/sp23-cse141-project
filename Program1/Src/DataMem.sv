@@ -10,8 +10,10 @@ module DataMem #(parameter W=8, byte_count=256) (
     input               clk,
                         reset,
                         WriteEn,
-    input [W-1:0]       DataAddress,
+                        Mem_to_Reg,
+    input   [W-1:0]     DataAddress,
                         DataIn,
+                        ALUResult,
     output logic[W-1:0] DataOut
     );
     
@@ -26,7 +28,12 @@ module DataMem #(parameter W=8, byte_count=256) (
         end
     end
 
-    assign DataOut = Core[DataAddress];
+    always_comb begin
+        if(Mem_to_Reg)
+            DataOut = Core[DataAddress];
+        else
+            DataOut = ALUResult;
+    end
 
 
 endmodule
