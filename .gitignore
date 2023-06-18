@@ -1,4 +1,9 @@
-.Program1\Src\db
-.Program1\Src\incremental_db
-.Program1\Src\output_files
-.Program1\Src\simulation
+/Program1/Src/db
+/Program1/Src/incremental_db
+/Program1/Src/output_files
+/Program1/Src/simulation
+*.bak
+*.rpt
+Program1/Src/Program1.qpf
+Program1/Src/Program1.qsf
+Program1/Src/Program1.qws
