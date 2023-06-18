@@ -1,1 +1,4 @@
-.Program1/db
+.Program1\Src\db
+.Program1\Src\incremental_db
+.Program1\Src\output_files
+.Program1\Src\simulation
