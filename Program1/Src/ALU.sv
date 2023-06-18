@@ -10,8 +10,8 @@ import Operations::*;
 module ALU #(parameter W=8) (
     input [W-1:0] ReadA,
                   ReadB,
-                  Immediate,
-    input [4:0] Operand,
+    input [4:0]   Immediate,
+    input [3:0]   Operand,
     output logic [W-1:0] Output,
     output logic Zero,
     output wire Equal
@@ -26,12 +26,13 @@ module ALU #(parameter W=8) (
             OR   : Output = ReadA | ReadB;
             NOT  : Output = ~ReadA | ReadB;
             SUB  : Output = ReadA - ReadB;
+            STR  : Output = ReadB;
             SLT  : Output = (ReadB < ReadA) ? ReadB : (ReadA < ReadB) ? ReadA : 0;
             SEQ  : Output = (ReadA == ReadB) ? ReadA : 0;
-            // MVTO : Output = InputA + InputB;
+            MVTO : Output = ReadB;
             // MVFR : Output = InputA + InputB;
             XOR  : Output = ReadA ^ ReadB;
-            // XORR : Output = InputA + InputB;
+            XORR : Output = ^ReadB;
             ADDI : Output = ReadA + Immediate;
             SUBI : Output = ReadA - Immediate;
             LSRI : Output = ReadA >> Immediate;
