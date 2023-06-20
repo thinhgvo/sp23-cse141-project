@@ -17,17 +17,8 @@ module DataMem #(parameter W=8, byte_count=256) (
     output logic[W-1:0] DataOut
     );
     
-    reg [W-1:0] Core[byte_count-1:0];
-
-    always_ff @(posedge clk) begin
-        if(reset) begin
-            for(integer i = 0; i < byte_count; i++)
-                Core[i] <= 0;
-        end else if(WriteEn) begin
-            Core[DataAddress] <= DataIn;
-        end
-    end
-
+    logic [W-1:0] Core[byte_count-1:0];
+	 
     always_comb begin
         if(Mem_to_Reg)
             DataOut = Core[DataAddress];
@@ -35,5 +26,8 @@ module DataMem #(parameter W=8, byte_count=256) (
             DataOut = ALUResult;
     end
 
-
+    always @(posedge clk) begin
+		  if(WriteEn)
+            Core[DataAddress] <= DataIn;
+    end
 endmodule

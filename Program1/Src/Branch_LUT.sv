@@ -8,28 +8,15 @@
 module BLUT (
   input logic clk,
   input logic reset,
-  input logic [4:0] index,
-  input logic [9:0] target_address,
-  input logic WriteEn,
-  output logic[9:0] branch_target
+  input logic  [3:0] index,
+  output logic [7:0] branch_target
 );
 
-  logic [9:0] blut [31:0];
-
-  logic [9:0] branch_target_reg;
-
-  always_ff @(posedge clk or posedge reset) begin
-    if (reset) begin
-      branch_target_reg <= 10'b0;
-    end else begin
-      if (WriteEn) begin
-        blut[index] <= target_address;
-      end else begin
-        branch_target_reg <= blut[index];
-      end
-    end
+  always_comb begin
+	  case(index)
+		  4'b0000 : branch_target = 0;
+		  default : branch_target = 0;
+	  endcase
   end
-
-  assign branch_target = branch_target_reg;
 
 endmodule

@@ -12,18 +12,18 @@ module ALU #(parameter W=8) (
                   ReadB,
     input [4:0]   Immediate,
     input [3:0]   ROperand,
-	input [2:0]	  IOperand,
-	input 		  OpType,
+    input [2:0]	  IOperand,
+    input 		  OpType,
     output logic [W-1:0] Output,
-    output logic  Zero,
-    output wire   Equal
+    output logic         Zero,
+    output wire          Equal
     );
 
     assign Equal = (ReadA == ReadB) ? 1 : 0;
 
     always_comb begin 
-		  case (OpType)
-           0 : case (ROperand)
+		case (OpType)
+            0 : case (ROperand)
                 AND  : Output = ReadA & ReadB;
                 OR   : Output = ReadA | ReadB;
                 ADD  : Output = ReadA + ReadB;
@@ -31,16 +31,16 @@ module ALU #(parameter W=8) (
                 SUB  : Output = ReadA - ReadB;
                 STR  : Output = ReadA;
 				LOAD : Output = ReadA;
-				SLT  : Output = ReadA < ReadB;
-				SEQ  : Output = ReadA == ReadB;
+                SLT  : Output = ReadA < ReadB;
+                SEQ  : Output = ReadA == ReadB;
                 MVTO : Output = ReadA;
                 BTRU : Output = (ReadA == 1) ? 1 : 0;
                 // MVFR : Output = InputA + InputB;
                 XOR  : Output = ReadA ^ ReadB;
                 XORR : Output = ^ReadB;
                 default: Output = 0;
-           endcase
-			  1 : case (IOperand)
+            endcase
+            1 : case (IOperand)
                 ADDI : Output = ReadA + Immediate;
                 SUBI : Output = ReadA - Immediate;
                 LSRI : Output = ReadA >> Immediate;
@@ -48,7 +48,7 @@ module ALU #(parameter W=8) (
                 B    : Output = (Immediate == 1) ? 1 : 0;
                 LUT  : Output = Immediate;
                 default: Output = 0;
-           endcase
+            endcase
         endcase
         case (Output)
             8'b0 : Zero = 1; 
